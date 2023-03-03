@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 
 public class UtilsFunctions {
 
@@ -640,6 +641,143 @@ public class UtilsFunctions {
     // expected. Starting with JDK 11, this problem has a solution named strip().
     // This method extends the power of trim() into the land of Unicode:
 
-    // 21. Finding the longest common prefix
+    // 22. Finding the longest common prefix
+    // Let's consider the following array of strings:
+    String[] texts = { "abc", "abcd", "abcde", "ab", "abcd", "abcdef" };
+
+    // Now, let's put these string one below the other, as follows:
+    // abc
+    // abcd
+    // abcde
+    // ab
+    // abcd
+    // abcdef
+    // A simple comparison of these strins reveals that "ab" is the longest common
+    // prefix.
+    // This solution takes the first string from the array and compares each of its
+    // characters in the rest of the strings. The algorithm stops if either of the
+    // following happens: -The length of the first string is greater than the length
+    // of any of the other strings -The current character of the first string is not
+    // the same as the current character of any of the other strings
+
+    public static String longestCommonPrefix(String[] strs) {
+        if (strs.length == 1) {
+            return strs[0];
+        }
+        int firstLen = strs[0].length();
+        for (int prefixLen = 0; prefixLen < firstLen; prefixLen++) {
+            if (prefixLen = strs[i].length() || strs[i].charAt(prefixLen) != ch) {
+                return strs[i].substring(0, prefixLen);
+            }
+        }
+        return strs[0];
+    }
+
+    // 23. Applying indentation
+    // Starting with JDK 12, we can indent text via the String.indent(int n)
+    // method.Let's assume that we have the following String values:
+
+    // String days = "Sunday\n"
+    // + "Monday\n"
+    // + "Tuesday\n"
+    // + "Wednesday\n"
+    // + "Thursday\n"
+    // + "Friday\n"
+    // + "Saturday";
+    // Printing this String values with an indentation of 10 spaces can be done as
+    // follows:
+    // System.out.print(days.indent(10));
+
+    // Now, let's try a cascade indentation:
+
+    public static String cascadeIndentation(List<String> days) {
+        // List days = Arrays.asList("Sunday", "Monday", "Tuesday", "Wednesday",
+        // "Thursday", "Friday", "Saturday");
+        for (int i = 0; i < days.size(); i++) {
+            System.out.print(days.get(i).indent(i));
+        }
+    }
+
+    // How about indenting a piece of HTML code? Let's see:
+    String html = "";
+    String body = "";
+    String h2 = "";
+    String textHtml = "Hello world!";
+    String closeH2 = "";
+    String closeBody = "";
+    String closeHtml = "";
+    // System.out.println(html.indent(0) + body.indent(4) + h2.indent(8) +
+    // textHtml.indent(12) + closeH2.indent(8) + closeBody.indent(4) +
+    // closeHtml.indent(0));
+
+    // 24. Transforming Strings
+
+    // Let's assume that we have a string and we want to transform it into another
+    // string (for example, transform it into upper case). We can do this by
+    // applying a function such as Function.In JDK 8, we can accomplish this via
+    // map(), as shown in the following two simple examples:
+
+    // hello world
+    String resultMap = Stream.of("hello")
+            .map(s -> s + " world")
+            .findFirst()
+            .get();
+    // GOOOOOOOOOOOOOOOOL! GOOOOOOOOOOOOOOOOL!
+    String resultMap2 = Stream.of("gooool! ")
+            .map(String::toUpperCase)
+            .map(s -> s.repeat(2))
+            .map(s -> s.replaceAll("O", "OOOO"))
+            .findFirst()
+            .get();
+
+    // Starting with JDK 12, we can rely on a new method named transform​(Function
+    // f). Let's rewrite the preceding snippets of code via transform():
+
+    // hello world
+    String result3 = "hello".transform(s -> s + " world");
+    // GOOOOOOOOOOOOOOOOL! GOOOOOOOOOOOOOOOOL!
+    String result4 = "gooool!".transform(String::toUpperCase)
+            .transform(s -> s.repeat(2))
+            .transform(s -> s.replaceAll("O", "OOOO"));
+
+    // While map() is more general, transform() is dedicated to applying a function
+    // to a string and returns the resulting string.
+
+    // 25. Computing the minimum and maximum of two numbers
+
+    // Before JDK 8, a possible solution would be to rely on the Math.min() and
+    // Math.max() methods, as follows:
+
+    int i1 = -45;
+    int i2 = -15;
+    int min = Math.min(i1, i2);
+    int max = Math.max(i1, i2);
+
+    // The Math class provides a min() and a max() method for each primitive numeric
+    // type (int, long, float, and double).Starting with JDK 8, each wrapper class
+    // of primitive numeric types (Integer, Long, Float, and Double) comes with
+    // dedicated min() and max() methods, and, behind these methods, there are
+    // invocations of their correspondents from the Math class. See the following
+    // example (this is a little bit more expressive):
+
+    double d1 = 0.023844D;
+    double d2 = 0.35468856D;
+    double min2 = Double.min(d1, d2);
+    double max2 = Double.max(d1, d2);
+
+    // In a functional style context, a potential solution will rely on the
+    // BinaryOperator functional interface. This interface comes with two methods,
+    // minBy() and maxBy():
+    float f1 = 33.34F;
+    final float f2 = 33.213F;
+    float min3 = BinaryOperator.minBy(Float::compare).apply(f1, f2);
+    float max3 = BinaryOperator.maxBy(Float::compare).apply(f1, f2);
+
+    // 26. Summing two large int/long values and operation overflow
+
+    // Examples:
+    int x = 2;
+    int y = 7;
+    int z = x + y; // 9
 
 }
