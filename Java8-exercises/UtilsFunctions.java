@@ -780,4 +780,242 @@ public class UtilsFunctions {
     int y = 7;
     int z = x + y; // 9
 
+    // Now, let's apply this operator on the following two large numbers
+    // (sum 2,147,483,647 with itself):
+    int x1 = Integer.MAX_VALUE;
+    int y1 = Integer.MAX_VALUE;
+    int z1 = x + y; // -2
+
+    // This time, z will be equal to -2, which is not the expected result, that is,
+    // 4,294,967,294. Changing only the z type from int to long will not help.
+    // However, changing the types of x and y from int to long as well will help:
+
+    long x2 = Integer.MAX_VALUE;
+    long y2 = Integer.MAX_VALUE;
+    long z2 = x + y; // 4294967294
+
+    // But the problem will reappear if, instead of Integer.MAX_VALUE, there is
+    // Long.MAX_VALUE:
+    long x3 = Long.MAX_VALUE;
+    long y3 = Long.MAX_VALUE;
+    long z3 = x + y; // -2
+
+    // 27. String as an unsigned number in the radix
+
+    // In Java, strings representing positive numbers can be parsed as unsigned int
+    // and long types via the parseUnsignedInt() and parseUnsignedLong() JDK 8
+    // methods. For example, let's consider the following integer as a string:
+    String nri = "255500";
+    // The solution to parsing it into an unsigned int value in the radix of 36 (the
+    // maximum accepted radix) looks as follows:
+
+    int result2 = Integer.parseUnsignedInt(nri, Character.MAX_RADIX);
+
+    // The first argument is the number, while the second is the radix. The radix
+    // should be in the range [2, 36] or [Character.MIN_RADIX,
+    // Character.MAX_RADIX].Using a radix of 10 can be easily accomplished as
+    // follows (this method applies a radix of 10 by default):
+
+    int result5 = Integer.parseUnsignedInt(nri);
+
+    // Starting with JDK 9, parseUnsignedInt() has a new flavor. Besides the string
+    // and the radix, this method accepts a range of the [beginIndex, endIndex]
+    // type. This time, the parsing is accomplished in this range. For example,
+    // specifying the range [1, 3] can be done as follows:
+    int result6 = Integer.parseUnsignedInt(nri, 1, 4, Character.MAX_RADIX);
+
+    // The parseUnsignedInt() method can parse strings that represent numbers
+    // greater than Integer.MAX_VALUE (trying to accomplish this via
+    // Integer.parseInt() will throw a java.lang.NumberFormatException exception):
+    // Integer.MAX_VALUE + 1 = 2147483647 + 1 = 2147483648
+    int maxValuePlus1 = Integer.parseUnsignedInt("2147483648");
+
+    // 28. Converting into a number by an unsigned conversion
+    // The problem requires that we convert the given signed int into long via an
+    // unsigned conversion. So, let's consider signed Integer.MIN_VALUE, which is
+    // -2,147,483,648.In JDK 8, by using the Integer.toUnsignedLong() method, the
+    // conversion will be as follows (the result will be 2,147,483,648):
+
+    long result7 = Integer.toUnsignedLong(Integer.MIN_VALUE);
+
+    // Here is another example that converts the signed Short.MIN_VALUE and
+    // Short.MAX_VALUE into unsigned integers:
+
+    int result8 = Short.toUnsignedInt(Short.MIN_VALUE);
+    int result9 = Short.toUnsignedInt(Short.MAX_VALUE);
+
+    // Other methods from the same category are Integer.toUnsignedString(),
+    // Long.toUnsignedString(), Byte.toUnsignedInt(), Byte.toUnsignedLong(),
+    // Short.toUnsignedInt(), and Short.toUnsignedLong().
+
+    // 29. Comparing two unigned numbers
+    // Let's consider two signed integers, Integer.MIN_VALUE (-2,147,483,648) and
+    // Integer.MAX_VALUE (2,147,483,647). Comparing these integers (signed values)
+    // will result in -2,147,483,648 being smaller than 2,147,483,647:
+    // resultSigned is equal to -1 indicating that// MIN_VALUE is smaller than
+    // MAX_VALUE
+    int resultSigned = Integer.compare(Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+    // In JDK 8, these two integers can be compared as unsigned values via the
+    // Integer.compareUnsigned() method (this is the equivalent of Integer.compare()
+    // for unsigned values). Mainly, this method ignores the notion of sign bit, and
+    // the left-most bit is considered the most significant bit. Under the unsigned
+    // values umbrella, this method returns 0 if the compared numbers are equal, a
+    // value less than 0 if the first unsigned value is smaller than the second, and
+    // a value greater than 0 if the first unsigned value is greater than the
+    // second.The following comparison returns 1, indicating that the unsigned value
+    // of Integer.MIN_VALUE is greater than the unsigned value of Integer.MAX_VALUE
+
+    // resultSigned is equal to 1 indicating that// MIN_VALUE is greater than
+    // MAX_VALUE
+    int resultUnsigned = Integer.compareUnsigned(Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+    // 30. Division and modulo of unsigned values
+    // Computing the unsigned quotient and remainder that resulted from the division
+    // of two unsigned values is supported by the JDK 8 unsigned arithmetic API via
+    // the divideUnsigned() and remainderUnsigned() methods.Let's consider the
+    // Interger.MIN_VALUE and Integer.MAX_VALUE signed numbers and let's apply
+    // division and modulo. There's nothing new here:
+
+    // signed division// -1int divisionSignedMinMax = Integer.MIN_VALUE /
+    // Integer.MAX_VALUE; // 0
+    int divisionSignedMaxMin = Integer.MAX_VALUE / Integer.MIN_VALUE;
+    // signed modulo// -1
+    int moduloSignedMinMax = Integer.MIN_VALUE % Integer.MAX_VALUE;
+    // 2147483647
+    int moduloSignedMaxMin = Integer.MAX_VALUE % Integer.MIN_VALUE;
+
+    // Now, let's treat Integer.MIN_VALUE and Integer.MAX_VALUE as unsigned values
+    // and let's apply divideUnsigned() and remainderUnsigned():
+
+    // division unsigned
+    int divisionUnsignedMinMax = Integer.divideUnsigned(Integer.MIN_VALUE, Integer.MAX_VALUE);
+    // 1
+    int divisionUnsignedMaxMin = Integer.divideUnsigned(Integer.MAX_VALUE, Integer.MIN_VALUE);
+    // 0// modulo unsigned
+    int moduloUnsignedMinMax = Integer.remainderUnsigned(Integer.MIN_VALUE, Integer.MAX_VALUE);
+    // 1
+    int moduloUnsignedMaxMin = Integer.remainderUnsigned(Integer.MAX_VALUE, Integer.MIN_VALUE);
+    // 2147483647
+
+    // 31. double/float is a finite floting-point value
+
+    // This problem arises from the fact that some floating-point methods and
+    // operations produce Infinity or NaN as results instead of throwing an
+    // exception.The solution to checking whether the given float/double is a finite
+    // floating-point value relies on the following conditions—the absolute value of
+    // the given float/double value must not exceed the largest positive finite
+    // value of the float/double type:
+
+    // for float
+    // Math.abs(f) <= Float.MAX_VALUE;
+    // for double
+    // Math.abs(d) <=
+    // Double.MAX_VALUE
+
+    // Starting with Java 8, the preceding conditions were exposed via two dedicated
+    // flag-methods, Float.isFinite() and Double.isFinite(). Therefore, the
+    // following examples are valid test cases for finite floating-point values:
+
+    Float f12 = 4.5f;
+    boolean f1f = Float.isFinite(f12); // f1 = 4.5, is finite
+    Float f21 = f1 / 0;
+    boolean f2f = Float.isFinite(f21); // f2 = Infinity, is not finite
+    Float f3 = 0f / 0f;
+    boolean f3f = Float.isFinite(f3); // f3 = NaN, is not finite
+    Double d12 = 0.000333411333d;
+    boolean d1f = Double.isFinite(d12); // d1 = 3.33411333E-4,is finite
+    Double d21 = d1 / 0;
+    boolean d2f = Double.isFinite(d21); // d2 = Infinity, is not finite
+    Double d3 = Double.POSITIVE_INFINITY * 0;
+    boolean d3f = Double.isFinite(d3); // d3 = NaN, is not finite
+
+    // 32. Applying logical AND/OR/XOR to two booleans expressions
+    // The truth Table of elementary logic operations
+
+    // In Java, the logical AND operator is represented as &&, the logical OR
+    // operator is represented as ||, and the logical XOR operator is represented as
+    // ^. Starting with JDK 8, these operators are applied to two booleans and are
+    // wrapped in three static methods—Boolean.logicalAnd(), Boolean.logicalOr(),
+    // and Boolean.logicalXor():
+
+    // 33. Converting BigInteger into primitive type
+
+    // The BigInteger class is a very handy tool for representing immutable
+    // arbitrary-precision integers.This class also contains methods (originating
+    // from java.lang.Number) that are useful for converting BigInteger into a
+    // primitive type such as byte, long, or double. However, these methods can
+    // produce unexpected results and confusion. For example, let's assume that we
+    // have BigInteger that wraps Long.MAX_VALUE:
+
+    BigInteger nr = BigInteger.valueOf(Long.MAX_VALUE);
+
+    // Let's convert this BigInteger into a primitive long via the
+    // BigInteger.longValue() method:
+
+    long nrLong = nr.longValue();
+
+    // So far, everything has worked as expected since the Long.MAX_VALUE is
+    // 9,223,372,036,854,775,807 and the nrLong primitive variable has exactly this
+    // value.Now, let's try to convert this BigInteger class into a primitive int
+    // value via the BigInteger.intValue() method:
+
+    int nrInt = nr.intValue();
+
+    // in jdk 8 a new set of methods was added
+
+    long nrExactLong = nr.longValueExact();
+    // works as expectedint nrExact
+    Int=nr.intValueExact(); // throws // ArithmeticException
+
+    // 34. Converting long into int
+
+    // Converting a long value into an int value seems like an easy job. For
+    // example, a potential solution can rely on casting the following:
+
+    long nr2 = Integer.MAX_VALUE;
+    int intNrCast = (int) nr2;
+
+    // Alternatively, it can rely on Long.intValue(), as follows:
+    int intNrValue = Long.valueOf(nrLong).intValue();
+
+    // Both approaches work just fine. Now, let's suppose we have the following long
+    // value:
+    long nrMaxLong = Long.MAX_VALUE;
+    // This time, both approaches will return -1. In order to avoid such results, it
+    // is advisable to rely on JDK 8, that is, Math.toIntExact(). This method gets
+    // an argument of the long type and tries to convert it into int. If the
+    // obtained value overflows int, then this method will throw
+    // ArithmeticException:
+
+    // throws ArithmeticException
+    int intNrMaxExact = Math.toIntExact(nrMaxLong);
+
+    // 35. Computing tne floor of a division and modulus
+    // Let's assume that we have the following division:
+
+    double z4 = (double) 222 / 14;
+
+    // This will initialize z with the result of this division, that is, 15.85, but
+    // our problem requests the floor of this division, which is 15 (this is the
+    // largest integer value that is less than or equal to the algebraic quotient).
+    // A solution to obtain this desired result will consist of applying
+    // Math.floor(15.85), which is 15.However, 222 and 14 are integers, and so this
+    // preceding division is written as follows:
+
+    int z5 = 222 / 14;
+
+    // This time, z will be equal to 15, which is exactly the expected result (the /
+    // operator returns the integer closest to zero). There is no need to apply
+    // Math.floor(z). Moreover, if the divisor is 0, then 222/0 will throw
+    // ArithmeticException.
+
+    // The conclusion so far is that the floor of a division for two integers that
+    // have the same sign (both are positive or negative) can be obtained via the /
+    // operator.Okay, so far, so good, but let's assume that we have the following
+    // two integers (opposite signs; the dividend is negative and the divisor is
+    // positive, and vice versa):
+
+    double z6 = (double) -222 / 14;
+
 }
