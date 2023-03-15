@@ -12,6 +12,7 @@ public class StringsNumbersAndMaths {
          * vowel, then check whether it sits between 'a' and 'z' (this means that the
          * current character is a consonant).
          */
+        System.out.println(funzioniUtili.countVowelsAndConsonants("pipo"));
 
         // 6.1
 
